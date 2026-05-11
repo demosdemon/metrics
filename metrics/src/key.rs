@@ -28,6 +28,15 @@ impl KeyName {
     pub fn into_inner(self) -> SharedString {
         self.0
     }
+
+    /// Returns a version of this name that is cheap to clone for long-lived retention.
+    ///
+    /// *NOTE:* This will allocate if this `KeyName` was created from a non-`'static`
+    /// string, however, the returned `KeyName` will not require allocation when cloned
+    /// or `to_retained` is invoked again.
+    pub fn to_retained(&self) -> Self {
+        KeyName(self.0.to_retained())
+    }
 }
 
 impl<T> From<T> for KeyName
@@ -145,6 +154,15 @@ impl Key {
         (self.name, self.labels.into_owned())
     }
 
+    /// Returns a version of this key that is cheap to clone for long-lived retention.
+    ///
+    /// *NOTE:* This will allocate if this `Key` was created from non-`'static`
+    /// parts, however, the returned `Key` will not require allocation when cloned
+    /// or `to_retained` is invoked again.
+    pub fn to_retained(&self) -> Self {
+        Self { name: self.name.to_retained(), labels: self.labels.to_retained(), hash: self.hash }
+    }
+
     /// Clones this [`Key`], and expands the existing set of labels.
     pub fn with_extra_labels(&self, extra_labels: Vec<Label>) -> Self {
         if extra_labels.is_empty() {
@@ -207,14 +225,14 @@ const fn hash_bytes(slice: &[u8], secrets: &RapidSecrets) -> u64 {
 
 /// Hash a label, taking care to hash keys and values with independent seeds.
 #[inline(always)]
-const fn hash_label(label: &Label) -> u64 {
+const fn hash_label(Label(key, value): &Label) -> u64 {
     // hash the key and value with independent seeds to avoid substitution errors, but use
     // seed_cpp to ensure the secrets arrays are the same const array
     const KEY: RapidSecrets = RapidSecrets::seed_cpp(1);
     const VALUE: RapidSecrets = RapidSecrets::seed_cpp(2);
 
-    let key = hash_bytes(label.0.as_const_str().as_bytes(), &KEY);
-    let value = hash_bytes(label.0.as_const_str().as_bytes(), &VALUE);
+    let key = hash_bytes(key.as_const_str().as_bytes(), &KEY);
+    let value = hash_bytes(value.as_const_str().as_bytes(), &VALUE);
 
     key ^ value
 }
@@ -590,5 +608,19 @@ mod tests {
 
         drop(shared);
         assert_eq!(shared_weak.strong_count(), 0);
+    }
+
+    #[test]
+    fn test_key_to_retained_preserves_equality_and_hash() {
+        let key = Key::from_parts(
+            String::from("retained"),
+            vec![Label::new(String::from("service"), String::from("api"))],
+        );
+
+        let retained = key.to_retained();
+
+        assert_eq!(key, retained);
+        assert_eq!(key.get_hash(), retained.get_hash());
+        assert_eq!(retained, retained.clone());
     }
 }

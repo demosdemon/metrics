@@ -1126,7 +1126,7 @@ checksum = "78ca9ab1a0babb1e7d5695e3530886289c18cf2f87ec19a575a0abdce112e3a3"
 
 [[package]]
 name = "metrics"
-version = "0.24.3"
+version = "0.24.5"
 dependencies = [
  "criterion",
  "log",
@@ -1152,7 +1152,7 @@ dependencies = [
 
 [[package]]
 name = "metrics-exporter-dogstatsd"
-version = "0.9.6"
+version = "0.9.8"
 dependencies = [
  "bytes",
  "itoa",
@@ -1169,7 +1169,7 @@ dependencies = [
 
 [[package]]
 name = "metrics-exporter-prometheus"
-version = "0.18.1"
+version = "0.18.3"
 dependencies = [
  "base64",
  "evmap",
@@ -1197,7 +1197,7 @@ dependencies = [
 
 [[package]]
 name = "metrics-exporter-tcp"
-version = "0.11.1"
+version = "0.11.2"
 dependencies = [
  "bytes",
  "crossbeam-channel",
@@ -1214,7 +1214,7 @@ dependencies = [
 
 [[package]]
 name = "metrics-observer"
-version = "0.5.0"
+version = "0.5.1"
 dependencies = [
  "bytes",
  "chrono",
@@ -1247,7 +1247,7 @@ dependencies = [
 
 [[package]]
 name = "metrics-util"
-version = "0.20.1"
+version = "0.20.3"
 dependencies = [
  "aho-corasick",
  "approx",

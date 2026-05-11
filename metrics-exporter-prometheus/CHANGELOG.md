@@ -8,6 +8,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased] - ReleaseDate
 
+## [0.18.3] - 2026-04-30
+
+### Fixed
+
+- Tightened the `metrics` dependency constraint to `^0.24.5` to avoid build failures when an older
+  `metrics 0.24.x` is locked. ([#692](https://github.com/metrics-rs/metrics/issues/692))
+
+## [0.18.2] - 2026-04-28
+
+### Added
+
+- New `PrometheusHandle::render_protobuf_to_write` method to render the Protocol Buffers payload
+  directly into a `Write` implementation. ([#661](https://github.com/metrics-rs/metrics/pull/661))
+
+### Changed
+
+- Descriptions are now stored in a lock-free `evmap`, eliminating writer contention with the rendering
+  hot path. ([#672](https://github.com/metrics-rs/metrics/pull/672))
+- `PrometheusRecorder` uses `Key::to_retained()` for more efficient long-lived key storage.
+  ([#688](https://github.com/metrics-rs/metrics/pull/688))
+- License updated to reflect the bundled Prometheus protobuf schema.
+  ([#683](https://github.com/metrics-rs/metrics/pull/683))
+- Use `write!` in `write_metric_line` for a small rendering perf improvement.
+  ([#658](https://github.com/metrics-rs/metrics/pull/658))
+
 ## [0.18.1] - 2025-12-07
 
 ### Fixed
